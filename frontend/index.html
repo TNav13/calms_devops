@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compteur Simple</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 550px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        #counter-display {
+            font-size: 5em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #increment-ten-btn {
+            background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+            box-shadow: 0 5px 15px rgba(0, 131, 176, 0.4);
+        }
+
+        #increment-ten-btn:hover {
+            box-shadow: 0 8px 20px rgba(0, 131, 176, 0.6);
+        }
+
+        #decrement-btn {
+            background: linear-gradient(135deg, #fc6c44 0%, #f54ea2 100%);
+            box-shadow: 0 5px 15px rgba(245, 78, 162, 0.4);
+        }
+
+        #decrement-btn:hover {
+            box-shadow: 0 8px 20px rgba(245, 78, 162, 0.6);
+        }
+
+        #decrement-ten-btn {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            box-shadow: 0 5px 15px rgba(235, 51, 73, 0.4);
+        }
+
+        #decrement-ten-btn:hover {
+            box-shadow: 0 8px 20px rgba(235, 51, 73, 0.6);
+        }
+
+        #reset-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+            grid-column: span 2;
+        }
+
+        #reset-btn:hover {
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.6);
+        }
+
+        .message {
+            margin-top: 20px;
+            color: #28a745;
+            font-size: 1.1em;
+            min-height: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Compteur</h1>
+        <div id="counter-display">0</div>
+        <div class="button-group">
+            <button id="increment-btn">+1</button>
+            <button id="increment-ten-btn">+10</button>
+            <button id="decrement-btn">-1</button>
+            <button id="decrement-ten-btn">-10</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        const counterDisplay = document.getElementById('counter-display');
+        const incrementBtn = document.getElementById('increment-btn');
+        const incrementTenBtn = document.getElementById('increment-ten-btn');
+        const decrementBtn = document.getElementById('decrement-btn');
+        const decrementTenBtn = document.getElementById('decrement-ten-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const messageDiv = document.getElementById('message');
+
+        // Charger la valeur initiale au chargement de la page
+        async function loadCounter() {
+            try {
+                const response = await fetch('/api/get-counter');
+                const data = await response.json();
+                counterDisplay.textContent = data.value;
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Incrémenter le compteur de 1
+        async function incrementCounter() {
+            try {
+                const response = await fetch('/api/increment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                counterDisplay.textContent = data.value;
+                
+                messageDiv.textContent = 'Enregistré!';
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                }, 1500);
+            } catch (error) {
+                console.error('Erreur:', error);
+                messageDiv.textContent = 'Erreur lors de l\'enregistrement';
+            }
+        }
+
+        // Incrémenter le compteur de 10
+        async function incrementTen() {
+            try {
+                const response = await fetch('/api/increment-ten', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                counterDisplay.textContent = data.value;
+                
+                messageDiv.textContent = '+10 ajouté!';
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                }, 1500);
+            } catch (error) {
+                console.error('Erreur:', error);
+                messageDiv.textContent = 'Erreur lors de l\'enregistrement';
+            }
+        }
+
+        // Décrémenter le compteur de 1
+        async function decrementCounter() {
+            try {
+                const response = await fetch('/api/decrement', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                counterDisplay.textContent = data.value;
+                
+                messageDiv.textContent = '-1 retiré!';
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                }, 1500);
+            } catch (error) {
+                console.error('Erreur:', error);
+                messageDiv.textContent = 'Erreur lors de l\'enregistrement';
+            }
+        }
+
+        // Décrémenter le compteur de 10
+        async function decrementTen() {
+            try {
+                const response = await fetch('/api/decrement-ten', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                counterDisplay.textContent = data.value;
+                
+                messageDiv.textContent = '-10 retiré!';
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                }, 1500);
+            } catch (error) {
+                console.error('Erreur:', error);
+                messageDiv.textContent = 'Erreur lors de l\'enregistrement';
+            }
+        }
+
+        // Réinitialiser le compteur
+        async function resetCounter() {
+            try {
+                const response = await fetch('/api/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                counterDisplay.textContent = data.value;
+                
+                messageDiv.textContent = 'Compteur réinitialisé!';
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                }, 1500);
+            } catch (error) {
+                console.error('Erreur:', error);
+                messageDiv.textContent = 'Erreur lors de la réinitialisation';
+            }
+        }
+
+        // Événements
+        incrementBtn.addEventListener('click', incrementCounter);
+        incrementTenBtn.addEventListener('click', incrementTen);
+        decrementBtn.addEventListener('click', decrementCounter);
+        decrementTenBtn.addEventListener('click', decrementTen);
+        resetBtn.addEventListener('click', resetCounter);
+        
+        // Charger le compteur au démarrage
+        loadCounter();
+    </script>
+</body>
+</html>
